@@ -4,7 +4,7 @@
 
 Simple demo to check if your computer is correctly tracking your mouse.
 
-Check it out: [https://alxhotel.github.io/track](https://alxhotel.github.io/track)
+Check it out: [https://alxhotel.github.io/mouse-tracker](https://alxhotel.github.io/mouse-tracker)
 
 ### Why?
 
@@ -14,7 +14,7 @@ I did this just to check that my OS (Linux... yeah I know) was actually tracking
 
 ### Example of a bad tracking
 
-As you can see there is **black box** at the bottom right where my OS wasn't tracking my mouse.
+As you can see there is a **black box** at the bottom right where my OS wasn't tracking my mouse.
 
 ![example bad trackiong](assets/example-bad-tracking.png)
 

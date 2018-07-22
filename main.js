@@ -4,25 +4,24 @@ var height = mainCanvasContext.canvas.height = window.innerHeight
 
 var touch = 'createTouch' in document
 var moveEvent = (touch) ? 'touchmove' : 'mousemove'
-
 var isDocument = (mainCanvasContext.canvas == document)
 var contextPos = {}
 
+const SQUARE_SIZE = 50
 var data = []
-var maxPoints = 100
 
+// Update context
 function updateContextXY() {
   var context = mainCanvasContext.canvas
-  var ctx = context
-  if (isDocument) ctx = context.body
+  if (isDocument) context = mainCanvasContext.canvas.body
 
   var left = 0
   var top = 0
-  if (ctx.offsetParent) {
+  if (context.offsetParent) {
     do {
-      left += ctx.offsetLeft
-      top  += ctx.offsetTop
-    } while (ctx = ctx.offsetParent)
+      left += context.offsetLeft
+      top  += context.offsetTop
+    } while (context = context.offsetParent)
   }
 
   contextPos = {
@@ -31,8 +30,13 @@ function updateContextXY() {
   }
 }
 
+// Get point
 function getXY(event) {
-  event = event.pageX ? event : event.touches.length ? event.touches[0] : { pageX: 0, pageY: 0 }
+  event = (event.pageX)
+    ? event
+    : (event.touches && event.touches.length)
+      ? event.touches[0]
+      : { pageX: 0, pageY: 0 }
   return {
     x: event.pageX - document.body.scrollLeft - contextPos.x,
     y: event.pageY - document.body.scrollTop - contextPos.y,
@@ -41,42 +45,46 @@ function getXY(event) {
 
 function draw() {
   // Clear canvas
-  mainCanvasContext.clearRect(0, 0, width, height);
+  var canvas = mainCanvasContext.canvas
+  mainCanvasContext.clearRect(0, 0, canvas.width, canvas.height)
 
-  // Setup stroke
-  mainCanvasContext.strokeStyle = "#df4b26";
-  mainCanvasContext.lineJoin = "round";
-  mainCanvasContext.lineWidth = 5;
-
-  // Draw line
   for (var i = 0; i < data.length; i++) {
-    mainCanvasContext.beginPath();
-    if (data[i] && i) {
-      mainCanvasContext.moveTo(data[i-1].x, data[i-1].y);
-    } else {
-      mainCanvasContext.moveTo(data[i] - 1, data[i].y);
+    if (!data[i]) continue
+
+    for (var j = 0; j < data[i].length; j++) {
+      if (!data[i][j]) continue
+
+      // Calculate center os square
+      var square = {
+        x: i * SQUARE_SIZE,
+        y: j * SQUARE_SIZE,
+        size: SQUARE_SIZE
+      }
+
+      // Draw square
+      mainCanvasContext.fillStyle = "#00884a"
+      mainCanvasContext.fillRect(square.x, square.y, square.size, square.size)
+      mainCanvasContext.stroke()
     }
-    mainCanvasContext.lineTo(data[i].x, data[i].y);
-    mainCanvasContext.closePath();
-    mainCanvasContext.stroke();
   }
-console.log(data)
 }
 
 // Listen for mouse moves
 document.addEventListener(moveEvent, function (e) {
   e.preventDefault()
 
-  // Check we are on top of canvas
-  if (e.target.nodeName !== 'CANVAS') return
+  var point = getXY(e)
 
-  // Add point to data
-  data.push(getXY(e))
+  // Store square
+  var x = Math.floor(point.x / SQUARE_SIZE)
+  var y = Math.floor(point.y / SQUARE_SIZE)
 
-  // If more than 100 points, drop the old data
-  if (data.length > maxPoints) {
-    data.shift()
-  }
+  if (!data[x]) data[x] = []
+
+  // Optimization: No need toñ redraw
+  if (data[x][y]) return
+
+  data[x][y] = true
 
   // Draw
   draw()
@@ -86,5 +94,8 @@ document.addEventListener(moveEvent, function (e) {
 updateContextXY()
 
 window.onresize = function(event) {
-  updateContextXY()
+  width = mainCanvasContext.canvas.width = window.innerWidth
+  height = mainCanvasContext.canvas.height = window.innerHeight
+
+  draw()
 }

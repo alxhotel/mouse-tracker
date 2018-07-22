@@ -1,0 +1,22 @@
+html, body {
+	height: 100%;
+}
+
+body {
+	font-family: monospace;
+	margin: 0;
+	padding: 0;
+	background: #000;
+	overflow: hidden;
+}
+
+h3 {
+	color: #fff;
+	position: absolute;
+	z-index: 999; 
+}
+
+canvas {
+	position: absolute;
+	z-index: 0;
+}
